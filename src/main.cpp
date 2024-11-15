@@ -6,6 +6,9 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
 
+bool darkTheme = true;
+bool showOptions = false;
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -58,16 +61,75 @@ bool InitializeOpenGL(HWND hwnd) {
 void Render(HWND hwnd) {
     HDC hdc = GetDC(hwnd);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    if (darkTheme == true) {
+        ImGui::StyleColorsDark();
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    } else {
+        ImGui::StyleColorsLight();
+        glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+    }
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("imgui cool");
-    ImGui::Text("imgui good");
+    // topbar
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            ImGui::EndMenu(); // placeholder
+        }
+        if (ImGui::BeginMenu("Edit")) {
+            ImGui::EndMenu(); // placeholder
+        }
+        if (ImGui::BeginMenu("Help")) {
+            if (ImGui::MenuItem("About")) {
+
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetFrameHeight()));
+    ImGui::SetNextWindowSize(ImVec2(200, ImGui::GetIO().DisplaySize.y - ImGui::GetFrameHeight()));
+    ImGui::Begin("Sidebar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+
+    ImGui::Spacing();
+
+    float button_width = ImGui::CalcTextSize("Options").x + ImGui::GetStyle().FramePadding.x * 2;
+    ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - button_width - ImGui::GetStyle().FramePadding.x);
+    ImGui::SetCursorPosY(ImGui::GetContentRegionMax().y - ImGui::GetStyle().FramePadding.y - ImGui::GetFrameHeightWithSpacing());
+
+    if (ImGui::Button("Options")) {
+        showOptions = !showOptions;
+    }
+
     ImGui::End();
+
+    if (showOptions) {
+        ImGui::SetNextWindowPos(ImVec2((ImGui::GetIO().DisplaySize.x - 300) * 0.5f, (ImGui::GetIO().DisplaySize.y - 200) * 0.5f), ImGuiCond_Once);
+        ImGui::OpenPopup("Options");
+    }
+
+    if (ImGui::BeginPopup("Options")) {
+        ImGui::Text("Options");
+
+        if (ImGui::Button("Light Theme"))
+            darkTheme = false;
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Dark Theme"))
+            darkTheme = true;
+
+        if (ImGui::Button("Close")) {
+            showOptions = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
