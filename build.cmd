@@ -6,4 +6,7 @@ if not exist bin (
 cd bin
 cmake ..
 cmake --build .
+cd Debug
+VMTTool.exe
+cd ..
 cd ..

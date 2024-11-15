@@ -15,10 +15,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
 }
 
-int main(int argc, char* argv[]) {
-    HINSTANCE hInstance = GetModuleHandle(nullptr);
-    int nCmdShow = SW_SHOWNORMAL;
-
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     const char CLASS_NAME[] = "Void Modding Tool";
 
     WNDCLASS wc = {};
