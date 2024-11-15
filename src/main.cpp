@@ -3,10 +3,14 @@
 #define IMGUI_DISABLE_DEBUG_TOOLS
 
 #include <windows.h>
+#include <dwmapi.h>
 #include <gl/gl.h>
+
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
+
+#pragma comment(lib, "dwmapi.lib")
 
 bool darkTheme = true;
 bool showOptions = false;
@@ -72,6 +76,8 @@ void Render(HWND hwnd) {
         glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
     }
 
+    RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
@@ -93,7 +99,10 @@ void Render(HWND hwnd) {
         ImGui::EndMainMenuBar();
     }
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+    if (darkTheme == true)
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+    else
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.9f, 0.9f, 0.9f, 1.0f));
 
     ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetFrameHeight()));
     ImGui::SetNextWindowSize(ImVec2(200, ImGui::GetIO().DisplaySize.y - ImGui::GetFrameHeight()));
@@ -121,13 +130,37 @@ void Render(HWND hwnd) {
     if (ImGui::BeginPopup("Options")) {
         ImGui::Text("Options");
 
-        if (ImGui::Button("Light Theme"))
+        if (ImGui::Button("Light Theme")) {
+            BOOL useDarkMode = FALSE;
+            LONG style = GetWindowLong( hwnd, GWL_EXSTYLE );
+            SetWindowLong( hwnd, GWL_EXSTYLE, style | WS_EX_TOOLWINDOW );
+            if ( SUCCEEDED( DwmSetWindowAttribute( hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof( useDarkMode ) ) ) )
+            {
+                ShowWindow( hwnd, SW_MINIMIZE );
+                ShowWindow( hwnd, SW_RESTORE );
+            }
+            SetWindowLong( hwnd, GWL_EXSTYLE, style );
+            ShowWindow( hwnd, SW_SHOW );
+
             darkTheme = false;
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Dark Theme"))
+        if (ImGui::Button("Dark Theme")) {
+            BOOL useDarkMode = TRUE;
+            LONG style = GetWindowLong( hwnd, GWL_EXSTYLE );
+            SetWindowLong( hwnd, GWL_EXSTYLE, style | WS_EX_TOOLWINDOW );
+            if ( SUCCEEDED( DwmSetWindowAttribute( hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &useDarkMode, sizeof( useDarkMode ) ) ) )
+            {
+                ShowWindow( hwnd, SW_MINIMIZE );
+                ShowWindow( hwnd, SW_RESTORE );
+            }
+            SetWindowLong( hwnd, GWL_EXSTYLE, style );
+            ShowWindow( hwnd, SW_SHOW );
+            
             darkTheme = true;
+        }
 
         if (ImGui::Button("Close")) {
             showOptions = false;
@@ -142,6 +175,9 @@ void Render(HWND hwnd) {
     ImGui::Begin("Rightbar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::Spacing();
+
+    ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 140, 10));
+    ImGui::Text("Void Modding Tool");
 
     ImGui::End();
 
