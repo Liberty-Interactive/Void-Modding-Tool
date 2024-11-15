@@ -1,4 +1,5 @@
 // main.cpp
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -14,7 +15,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+int main(int argc, char* argv[]) {
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
+    int nCmdShow = SW_SHOWNORMAL;
+
     const char CLASS_NAME[] = "Void Modding Tool";
 
     WNDCLASS wc = {};

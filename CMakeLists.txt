@@ -12,5 +12,5 @@ file(GLOB SOURCES src/*.cpp)
 add_executable(VMTTool ${SOURCES})
 
 if(WIN32) # linux users have WINE, lol
-    target_link_libraries(VMT PRIVATE user32 gdi32)
+    target_link_libraries(VMTTool PRIVATE user32 gdi32)
 endif()

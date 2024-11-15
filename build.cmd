@@ -1,5 +1,5 @@
-rem because we're lazy
 @echo off
+rem because we're lazy
 if not exist bin (
     mkdir bin
 )
