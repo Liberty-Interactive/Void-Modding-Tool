@@ -1,5 +1,7 @@
 // main.cpp
 #define WIN32_LEAN_AND_MEAN
+#define IMGUI_DISABLE_DEBUG_TOOLS
+
 #include <windows.h>
 #include <gl/gl.h>
 #include "imgui.h"
@@ -91,11 +93,15 @@ void Render(HWND hwnd) {
         ImGui::EndMainMenuBar();
     }
 
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
     ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetFrameHeight()));
     ImGui::SetNextWindowSize(ImVec2(200, ImGui::GetIO().DisplaySize.y - ImGui::GetFrameHeight()));
-    ImGui::Begin("Sidebar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Begin("Leftbar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::Spacing();
+
+    ImGui::PopStyleColor();
 
     float button_width = ImGui::CalcTextSize("Options").x + ImGui::GetStyle().FramePadding.x * 2;
     ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - button_width - ImGui::GetStyle().FramePadding.x);
@@ -130,6 +136,14 @@ void Render(HWND hwnd) {
 
         ImGui::EndPopup();
     }
+    
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 590, ImGui::GetFrameHeight()));
+    ImGui::SetNextWindowSize(ImVec2(600, ImGui::GetIO().DisplaySize.y - ImGui::GetFrameHeight())); 
+    ImGui::Begin("Rightbar", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
+
+    ImGui::Spacing();
+
+    ImGui::End();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -168,7 +182,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-    ImGui::StyleColorsDark();
+    ImGui::GetIO().IniFilename = nullptr;
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplOpenGL3_Init("#version 130");
