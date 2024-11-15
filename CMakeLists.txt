@@ -18,5 +18,5 @@ else()
 endif()
 
 if(WIN32) # linux users have WINE, lol
-    target_link_libraries(VMTTool PRIVATE user32 gdi32)
+    target_link_libraries(VMTTool PRIVATE user32 gdi32 opengl32 glu32)
 endif()
